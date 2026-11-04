@@ -9,6 +9,46 @@
  * Supervisor
 \* ========================= */
 
-void setup() {}
+#include <ChRt.h>
+#include "../MessageProtocol.h"
+#include "./Parser.h"
+
+#define INPUT_BUFFER_SIZE 32
+
+static THD_WORKING_AREA(wa_CommandParser, 256);
+static THD_FUNCTION(commandParser, arg) {
+
+  // Declaración de buffers para los comandos
+  char inputBuffer[INPUT_BUFFER_SIZE];
+  message msg;
+
+  while (true) {
+    // Mientras no haya input se puede saltar a otra hebra
+    while (!SerialUSB.available()) {
+      chThdSleepMilliseconds(50);
+    };
+
+    size_t bytes_read = SerialUSB.readBytes(inputBuffer, 32);
+    if (bytes_read < 2 || bytes_read == 32) {
+      SerialUSB.println("Formato del comando incorrecto");
+      SerialUSB.println("Un comando debe tener un mínimo de dos caracteres y un máximo de 32");
+      continue;
+    }
+
+    // TODO: This needs refactoring, the parse should return a token list
+    // For some commands won`t be sent to the other chip
+    int parse_status = parse_command(&msg, inputBuffer);
+    if (parse_status != 0) {
+      SerialUSB.println("Error al identificar el comando");
+    };
+  }
+};
+
+void setup() {
+  SerialUSB.begin(9600);
+  while (!SerialUSB);
+
+  chThdCreateStatic(wa_CommandParser, sizeof(wa_CommandParser), NORMALPRIO, commandParser, (void*)0);
+}
 
 void loop() {}
