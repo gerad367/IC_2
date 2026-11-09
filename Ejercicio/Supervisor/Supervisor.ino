@@ -29,12 +29,23 @@ static THD_FUNCTION(commandParser, arg) {
       chThdSleepMilliseconds(50);
     };
 
-    size_t bytes_read = SerialUSB.readBytes(inputBuffer, 32);
-    if (bytes_read < 2 || bytes_read == 32) {
-      SerialUSB.println("Formato del comando incorrecto");
-      SerialUSB.println("Un comando debe tener un mínimo de dos caracteres y un máximo de 32");
+    if (SerialUSB.available() > INPUT_BUFFER_SIZE - 1) {
+      SerialUSB.println("Comando demasiado largo.");
+      SerialUSB.flush();
+      // Clear the input serial buffer
+      while(SerialUSB.available()) {
+        SerialUSB.read();
+      }
       continue;
     }
+
+    size_t bytes_read = SerialUSB.readBytes(inputBuffer, INPUT_BUFFER_SIZE - 1);
+    if (bytes_read < 2) {
+      SerialUSB.println("Comando demasiado corto.");
+      SerialUSB.flush();
+      continue;
+    }
+    inputBuffer[bytes_read] = '\0';
 
     int parse_status = tokenize(inputBuffer, tokens);
     if (parse_status != 0) {
