@@ -20,6 +20,7 @@ static THD_FUNCTION(commandParser, arg) {
 
   // Declaración de buffers para los comandos
   char inputBuffer[INPUT_BUFFER_SIZE];
+  char tokens[COMMAND_TOKEN_SIZE][COMMAND_TOKEN_NUMBER];
   message msg;
 
   while (true) {
@@ -35,11 +36,10 @@ static THD_FUNCTION(commandParser, arg) {
       continue;
     }
 
-    // TODO: This needs refactoring, the parse should return a token list
-    // For some commands won`t be sent to the other chip
-    int parse_status = parse_command(&msg, inputBuffer);
+    int parse_status = tokenize(inputBuffer, tokens);
     if (parse_status != 0) {
-      SerialUSB.println("Error al identificar el comando");
+      SerialUSB.println("Error al procesar el comando");
+      continue;
     };
   }
 };
