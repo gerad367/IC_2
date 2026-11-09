@@ -1,5 +1,5 @@
 #include "Parser.h"
-COMMAND_TOKEN_NUMBER
+
 int tokenize(char *input_buffer, char *tokens_buffer[])
 {
   char *p = inpunt_buffer;
