@@ -38,6 +38,30 @@
  * otherwise functionality is not assured
  */
 
+// TODO: Change OpCodes to a bitfield
+//
+// OPcode [1 byte]
+//
+// Bits 8-7: Op type [01: op; 10: config; 11: response]
+//
+// Bits 6-5: Sensor select [01: Sensor_1; 10: Sensor_2]
+// Must be 00 if `Op type` is response
+//
+// Bits 4-3: Reserved
+// (I find it funny to describe these bits as reserved. As if this is gonna evolve someday)
+//
+// Bits 2-1: operation
+//
+//	if type is response:
+//		[00: ok; 01: failure; 10: status; 11: measurement]
+//
+//	if type is config:
+//		[00: delay; 01: inc; 10: cm; 11: us]
+//
+//	if type is op:
+//		[00: off; 01: oneshot: 10]
+//
+
 typedef enum {
 	Sensor_1_OneShot = 1,
 	Sensor_1_onPeriod,
