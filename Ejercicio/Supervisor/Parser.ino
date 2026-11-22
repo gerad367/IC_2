@@ -63,6 +63,7 @@ int tokenize(String input_buffer, String tokens_buffer[])
 
 int tokenize(String input_buffer, String tokens_buffer[])
 {
+  input_buffer.trim();
   if (input_buffer.length() == 0) return -1;
   while (input_buffer.indexOf("  ") > 0) input_buffer.replace("  ", " ");
 
@@ -73,6 +74,7 @@ int tokenize(String input_buffer, String tokens_buffer[])
   }
 
   tokens_buffer[0] = String(ptr);
+  tokens_buffer[0].trim();
 
   for (int i = 1; i < COMMAND_TOKEN_NUMBER; i++) {
     ptr = strtok(NULL, " ");
@@ -80,6 +82,7 @@ int tokenize(String input_buffer, String tokens_buffer[])
       return i;
     }
     tokens_buffer[i] = String(ptr);
+    tokens_buffer[i].trim();
   }
 
   return 4;

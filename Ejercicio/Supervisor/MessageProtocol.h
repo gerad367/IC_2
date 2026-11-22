@@ -42,7 +42,7 @@
 //
 // OPcode [1 byte]
 //
-// Bits 8-7: Op type [01: op; 10: config; 11: response]
+// Bits 8-7: Op type [00: status; 01: op; 10: config; 11: response]
 //
 // Bits 6-5: Sensor select [01: Sensor_1; 10: Sensor_2]
 // Must be 00 if `Op type` is response
@@ -59,34 +59,60 @@
 //		[00: delay; 01: inc; 10: cm; 11: us]
 //
 //	if type is op:
-//		[00: off; 01: oneshot: 10]
+//		[00: off; 01: oneshot; 10: on_period]
 //
 
-typedef enum {
-	Sensor_1_OneShot = 1,
-	Sensor_1_onPeriod,
-	Sensor_1_Off,
-	Sensor_1_Config_unit_inc,
-	Sensor_1_Config_unit_cm,
-	Sensor_1_Config_unit_us,
-	Sensor_1_Delay,
-	Sensor_1_Status,
-	Sensor_2_OneShot,
-	Sensor_2_onPeriod,
-	Sensor_2_Off,
-	Sensor_2_Config_unit_inc,
-	Sensor_2_Config_unit_cm,
-	Sensor_2_Config_unit_us,
-	Sensor_2_Delay,
-	Sensor_2_Status,
-	Response_OK,
-	Response_FAILURE,
-	Response_STATUS,
-	Response_MEASUREMENT,
-} OPCodes;
+#define OP_MASK						(char)0b11000000
+#define OP_TYPE_STATUS		(char)0b00000000
+#define OP_TYPE_OPERATION (char)0b01000000
+#define OP_TYPE_CONFIG		(char)0b10000000
+#define OP_TYPE_RESPONSE	(char)0b11000000
+
+#define SENSOR_MASK				(char)0b00110000
+#define SELECT_SENSOR_1		(char)0b00010000
+#define SELECT_SENSOR_2		(char)0b00100000
+
+#define CONFIG_MASK				(char)0b00000011
+
+#define RESPONSE_OK				(char)0b00000000
+#define RESPONSE_FAIL			(char)0b00000001
+#define RESPONSE_STATUS		(char)0b00000010
+#define RESPONSE_MEASURE	(char)0b00000011
+
+#define CONFIG_DELAY			(char)0b00000000
+#define CONFIG_INC				(char)0b00000001
+#define CONFIG_CM					(char)0b00000010
+#define CONFIG_US					(char)0b00000011
+
+#define OP_OFF						(char)0b00000000
+#define OP_ONESHOT				(char)0b00000001
+#define OP_ON_PERIOD			(char)0b00000010
+
+//typedef enum {
+//	Sensor_1_OneShot = 1,
+//	Sensor_1_onPeriod,
+//	Sensor_1_Off,
+//	Sensor_1_Config_unit_inc,
+//	Sensor_1_Config_unit_cm,
+//	Sensor_1_Config_unit_us,
+//	Sensor_1_Delay,
+//	Sensor_1_Status,
+//	Sensor_2_OneShot,
+//	Sensor_2_onPeriod,
+//	Sensor_2_Off,
+//	Sensor_2_Config_unit_inc,
+//	Sensor_2_Config_unit_cm,
+//	Sensor_2_Config_unit_us,
+//	Sensor_2_Delay,
+//	Sensor_2_Status,
+//	Response_OK,
+//	Response_FAILURE,
+//	Response_STATUS,
+//	Response_MEASUREMENT,
+//} OPCodes;
 
 typedef struct {
-	OPCodes OPcode;
+	char OPcode;
 	char bodylen;
 	char *body;
 } message;
@@ -96,12 +122,13 @@ typedef struct {
 	char address;
 	char mode;
 	char unit;
-	char delay[4];
-	char period[4];
+	char delay[2];
+	char period[2];
 } resp_status;
 
 typedef struct {
 	char id;
+	char unit;
 	char high_byte;
 	char low_byte;
 	char autotune_high_byte;
