@@ -1,7 +1,7 @@
 #ifndef __COMMAND_PARSER
 #define __COMMAND_PARSER
 
-#include "../MessageProtocol.h"
+#include "./MessageProtocol.h"
 
 #define COMMAND_TOKEN_SIZE 8
 #define COMMAND_TOKEN_NUMBER 4
