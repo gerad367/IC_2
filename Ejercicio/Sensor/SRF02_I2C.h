@@ -1,6 +1,8 @@
 #ifndef __SRF02_I2C
 #define __SRF02_I2C
 
+#include <ChRt.h>
+
 #define SRF02_I2C_INIT_DELAY 100 // in milliseconds
 #define SRF02_RANGING_DELAY 70 // milliseconds
 
@@ -38,11 +40,14 @@ typedef enum {
 } SRF02_STATE;
 
 typedef struct {
+	mutex_t* mtx;
+	thread_t* t_ptr;
+	char id;
 	char address;
 	SRF02_UNIT unit;
 	SRF02_STATE state;
-	float delay;
-	float period;
+	short delay;
+	short period;
 } srf02;
 
 #endif
